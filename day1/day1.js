@@ -1017,26 +1017,41 @@ const input = [
 	-77534
 ];
 
-console.log(input.reduce( (total, frequency) => frequency + total, 0) );
-
-let working = true;
-let solution;
-
-let outputArray = new Set();
-let index = 0;
-let freq = 0;
-while (working) {
-	if (index < input.length) {
-		freq += input[index];
-		if (outputArray.has(freq)) {
-			solution = freq;
-			working = false;
-  	}
-		outputArray.add(freq);
-  	index++;
-	} 
-	else {
-		index = 0;
-	}
+// PUZZLE A
+const result = document.querySelector('.resultingFrequency');
+const buttonPuzzleA = document.querySelector('.buttonPuzzleA');
+function puzzleA() {
+	const resultingFrequency = input.reduce( (total, frequency) => frequency + total, 0);
+	result.innerHTML = resultingFrequency.toString();
+	return resultingFrequency;
 }
-console.log(solution);
+buttonPuzzleA.addEventListener('click', puzzleA)
+
+
+// PUZZLE B
+const twice = document.querySelector('.twiceFrequency');
+const buttonPuzzleB = document.querySelector('.buttonPuzzleB');
+function puzzleB() {
+	let found = false;
+	let frequencyReachedTwice;
+	let outputArray = new Set();
+	let index = 0;
+	let freq = 0;
+	while (!found) {
+		if (index < input.length) {
+			freq += input[index];
+			if (outputArray.has(freq)) {
+				frequencyReachedTwice = freq;
+				found = true;
+	  	}
+			outputArray.add(freq);
+	  	index++;
+		} 
+		else {
+			index = 0;
+		}
+	}
+	twice.innerHTML = frequencyReachedTwice;
+	return frequencyReachedTwice;
+}
+buttonPuzzleB.addEventListener('click', puzzleB);
