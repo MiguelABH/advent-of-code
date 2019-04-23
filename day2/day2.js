@@ -253,7 +253,6 @@ const input = [
 
 const buttonPuzzleA = document.querySelector('.buttonPuzzleA');
 const checksumLabel = document.querySelector('.checksum');
-
 function puzzleA() {
 	// PART ONE
 	// Get repeating character from every string from the input
@@ -291,15 +290,30 @@ function puzzleB() {
 	// Compare every string with the other ones
 	// Save the two ids that just differ by one character
 	let differences = 0;
-
+	let lastCharIndex;
+	let charIndex;
+	let id1;
+	let id2;
 	for (let i = 0; i < input.length; i++) {
 		for (let k = i + 1; k < input.length; k++) {
 			for (let c = 0; c < input[i].length; c++) {
-				if (input[i][c] !== input[k][c]) differences++;
+				if (input[i][c] !== input[k][c]) {
+					charIndex = c;
+					differences++;
+				}
 			}
-			differences === 1 ? console.log(input[i], ' ', input[k]) : ' ';
+			if (differences === 1) {
+				id1 = input[i];
+				id2 = input[k];
+				lastCharIndex = charIndex;
+			} 
+			else
+				charIndex = 0;
 			differences = 0;	
 		}
 	}
+	const lettersCommon = [id1.slice(0, lastCharIndex), id1.slice(lastCharIndex + 1, id1.length)].join('');
+	commonLetters.innerHTML = lettersCommon;
+	return `ID 1: ${id1}, ID 2: ${id2}, Letters in Common: ${lettersCommon}`
 }
 buttonPuzzleB.addEventListener('click', puzzleB);

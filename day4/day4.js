@@ -977,78 +977,114 @@ let sortedInput = input.map(log => {
 		timestamp: logTime,
 		message: logMessage
 	};
-}).sort((a, b) => a.timestamp - b.timestamp);
+}).sort( (a, b) => a.timestamp - b.timestamp );
 
-let sleepTracker = {};
-let currentGuardId;
-let currentGuardSleepStartMinute;
-let currentGuardSleepEndMinute;
+// Puzzle A
+const buttonPuzzleA = document.querySelector('.buttonPuzzleA');
+const guardMinuteA = document.querySelector('.guardMinuteA');
+function puzzleA() {
+	
+	let sleepLogs = {};
+	let activeGuard;
+	let startMinute;
+	let endMinute;
 
-sortedInput.forEach( record => {
-	// Identify the type of record
-	// DATE - TIME - WAKES/FALLS - ACTION
-	// DATE - TIME - GUARD - ID
-	switch ( record.message.split(' ')[0] ) {
-		case 'Guard':
-			const messageParts = record.message.split(' ');
-			currentGuardId = +(messageParts[1].replace('#', ''));
-		break;
-		case 'falls':
-			currentGuardSleepStartMinute = record.timestamp.getMinutes();
-		break;
-		case 'wakes':
-			currentGuardSleepEndMinute = record.timestamp.getMinutes();
-			if (!sleepTracker[currentGuardId])
-				sleepTracker[currentGuardId] = {};
-			for (let i = currentGuardSleepStartMinute; i < currentGuardSleepEndMinute; i++) {
-				if (sleepTracker[currentGuardId][i])
-					sleepTracker[currentGuardId][i]++;
-				else
-					sleepTracker[currentGuardId][i] = 1;
-			}
-		break;
-	}
-});
+	sortedInput.forEach( record => {
+		// Identify the type of record
+		// DATE - TIME - WAKES/FALLS - ACTION
+		// DATE - TIME - GUARD - ID
+		switch ( record.message.split(' ')[0] ) {
+			case 'Guard':
+				const messageParts = record.message.split(' ');
+				activeGuard = +(messageParts[1].replace('#', ''));
+			break;
+			case 'falls':
+				startMinute = record.timestamp.getMinutes();
+			break;
+			case 'wakes':
+				endMinute = record.timestamp.getMinutes();
+				if (!sleepLogs[activeGuard])
+					sleepLogs[activeGuard] = {};
+				for (let i = startMinute; i < endMinute; i++) {
+					sleepLogs[activeGuard][i] ? sleepLogs[activeGuard][i]++ : sleepLogs[activeGuard][i] = 1;
+				}
+			break;
+		}
+	});
 
-const mostAsleepGuard = Object.keys(sleepTracker).map( guardSleepKey => {
-	const guardSleep = sleepTracker[guardSleepKey];
-	const totalSleep = Object.values(guardSleep).reduce( (a, b) => a + b, 0);
-	return {
-		guardId: guardSleepKey,
-		totalSleep: totalSleep
-	};
-}).sort((a, b) => b.totalSleep - a.totalSleep)[0].guardId;
+	const mostAsleepGuard = Object.keys(sleepLogs).map( guardSleepKey => {
+		const guardSleep = sleepLogs[guardSleepKey];
+		const totalSleep = Object.values(guardSleep).reduce( (a, b) => a + b, 0);
+		return {
+			guardId: guardSleepKey,
+			totalSleep: totalSleep
+		};
+	}).sort((a, b) => b.totalSleep - a.totalSleep)[0].guardId;
 
-let mostAsleepMinute;
-let currentMostAsleepMinute = 0;
-
-Object.keys(sleepTracker[mostAsleepGuard]).map( minute => {
-	if (sleepTracker[mostAsleepGuard][minute] > currentMostAsleepMinute) {
-		currentMostAsleepMinute = sleepTracker[mostAsleepGuard][minute];
-		mostAsleepMinute = minute;
-	}
-});
-
-console.log( mostAsleepGuard, mostAsleepMinute );
-console.log( mostAsleepGuard * mostAsleepMinute );
-
-// PART B
-const guardMostAsleepOnMinuteAndMinute = Object.keys(sleepTracker).map( guardSleepKey => {
-	const guardSleep = sleepTracker[guardSleepKey];
 	let mostAsleepMinute;
 	let currentMostAsleepMinute = 0;
-	Object.keys(guardSleep).map( minute => {
-		if (guardSleep[minute] > currentMostAsleepMinute) {
-			currentMostAsleepMinute = guardSleep[minute];
+
+	Object.keys(sleepLogs[mostAsleepGuard]).map( minute => {
+		if (sleepLogs[mostAsleepGuard][minute] > currentMostAsleepMinute) {
+			currentMostAsleepMinute = sleepLogs[mostAsleepGuard][minute];
 			mostAsleepMinute = minute;
 		}
 	});
-	return {
-		guardId: guardSleepKey,
-		mostAsleepMinute: mostAsleepMinute,
-		mostAsleepMinuteTime: guardSleep[mostAsleepMinute]
-	};
-}).sort( (a, b) => b.mostAsleepMinuteTime - a.mostAsleepMinuteTime)[0];
 
-console.log(guardMostAsleepOnMinuteAndMinute);
-console.log(guardMostAsleepOnMinuteAndMinute.guardId * guardMostAsleepOnMinuteAndMinute.mostAsleepMinute);
+	guardMinuteA.innerHTML = mostAsleepGuard * mostAsleepMinute;
+	return `Guard ID: ${mostAsleepGuard} * Minute: ${mostAsleepMinute} = ${mostAsleepGuard * mostAsleepMinute}`;
+}
+buttonPuzzleA.addEventListener('click', puzzleA);
+
+// Puzzle B
+const buttonPuzzleB = document.querySelector('.buttonPuzzleB');
+const guardMinuteB = document.querySelector('.guardMinuteB');
+function puzzleB() {
+	let sleepLogs = {};
+	let activeGuard;
+	let startMinute;
+	let endMinute;
+
+	sortedInput.forEach( record => {
+		// Identify the type of record
+		// DATE - TIME - WAKES/FALLS - ACTION
+		// DATE - TIME - GUARD - ID
+		switch ( record.message.split(' ')[0] ) {
+			case 'Guard':
+				const messageParts = record.message.split(' ');
+				activeGuard = +(messageParts[1].replace('#', ''));
+			break;
+			case 'falls':
+				startMinute = record.timestamp.getMinutes();
+			break;
+			case 'wakes':
+				endMinute = record.timestamp.getMinutes();
+				if (!sleepLogs[activeGuard])
+					sleepLogs[activeGuard] = {};
+				for (let i = startMinute; i < endMinute; i++) {
+					sleepLogs[activeGuard][i] ? sleepLogs[activeGuard][i]++ : sleepLogs[activeGuard][i] = 1;
+				}
+			break;
+		}
+	});
+	const guardMostAsleepOnMinuteAndMinute = Object.keys(sleepLogs).map( guardSleepKey => {
+		const guardSleep = sleepLogs[guardSleepKey];
+		let mostAsleepMinute;
+		let currentMostAsleepMinute = 0;
+		Object.keys(guardSleep).map( minute => {
+			if (guardSleep[minute] > currentMostAsleepMinute) {
+				currentMostAsleepMinute = guardSleep[minute];
+				mostAsleepMinute = minute;
+			}
+		});
+		return {
+			guardId: guardSleepKey,
+			mostAsleepMinute: mostAsleepMinute,
+			mostAsleepMinuteTime: guardSleep[mostAsleepMinute]
+		};
+	}).sort( (a, b) => b.mostAsleepMinuteTime - a.mostAsleepMinuteTime)[0];
+
+	guardMinuteB.innerHTML = guardMostAsleepOnMinuteAndMinute.guardId * guardMostAsleepOnMinuteAndMinute.mostAsleepMinute;
+	return `Guard ID: ${guardMostAsleepOnMinuteAndMinute.guardId} * Minute: ${guardMostAsleepOnMinuteAndMinute.mostAsleepMinute} = ${guardMostAsleepOnMinuteAndMinute.guardId * guardMostAsleepOnMinuteAndMinute.mostAsleepMinute}`;
+}
+buttonPuzzleB.addEventListener('click', puzzleB);
